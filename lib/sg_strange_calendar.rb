@@ -12,38 +12,57 @@ class SgStrangeCalendar
     day:   Date::DAYNAMES.map { _1[0, 2] }.cycle.first(DAY_CELLS)
   }.freeze
 
+  CONVERTER_AND_ROW_FORMAT = {
+    horizontal: [:itself,    "%-4s#{'%3s' * DAY_CELLS}"],
+    vertical:   [:transpose, "%-4s#{'%4s' * 12}"]
+  }.freeze
+
   def initialize(year, today = nil)
     @year = year
     @today = today
-    @grid = grid_only_header
+    @horizontal_grid = horizontal_grid_only_header
 
-    fill_grid_with_days
+    fill_horizontal_grid_with_marked_days
   end
 
   def generate(vertical: false)
-    lines = @grid.map do |row|
-      format("%-4s#{'%3s' * (row.size - 1)}\n", *row)
-    end
+    direction = vertical ? :vertical : :horizontal
 
-    lines[@today.month].sub!(/ #{@today.day} ?/, "[#{@today.day}]") if @today
-    lines.join.chomp
+    converter, row_format = CONVERTER_AND_ROW_FORMAT[direction]
+    grid = converter.to_proc[@horizontal_grid]
+
+    grid.map { |row| (row_format % row).rstrip }.join("\n").chomp
+      .sub(/-(\d+) ?/) { "[#{$1}]" }
   end
 
   private
 
-  def grid_only_header
+  def horizontal_grid_only_header
     HEADER[:month].zip.tap { |grid| grid[0] = [@year, *HEADER[:day]] }
   end
 
-  def fill_grid_with_days
+  def fill_horizontal_grid_with_marked_days
     1.upto(12).each do |month|
       # 月初のwdayが欲しいだけなので、本当はDate.newより計算した方が速いはず(が、何も見ずに書けない :<
       start_index = Date.new(@year, month, 1).wday + 1
 
-      end_of_month = DAYS_IN_MONTH[month]
-      end_of_month = 29 if month == 2 && Date.gregorian_leap?(@year)
+      @horizontal_grid[month][start_index..] = marked_days(month:)
+      @horizontal_grid[month][DAY_CELLS] ||= nil # 要素数を揃える
+    end
+  end
 
-      @grid[month][start_index..] = Array(1..end_of_month)
+  def marked_days(month:)
+    Array(1..end_of(month:)).tap do |days|
+      # @todayがある時は当該日を[]で囲む時のマーカーとして負数にしておく
+      days[@today.day - 1] *= -1 if @today&.month == month
+    end
+  end
+
+  def end_of(month:)
+    if month == 2 && Date.gregorian_leap?(@year)
+      29
+    else
+      DAYS_IN_MONTH[month]
     end
   end
 end
