@@ -12,17 +12,21 @@ class SgStrangeCalendar
     day:   Date::DAYNAMES.map { _1[0, 2] }.cycle.first(DAY_CELLS)
   }.freeze
 
-  def initialize(year, _today = nil)
+  def initialize(year, today = nil)
     @year = year
+    @today = today
     @grid = grid_only_header
 
     fill_grid_with_days
   end
 
   def generate(vertical: false)
-    @grid.map do |row|
+    lines = @grid.map do |row|
       format("%-4s#{'%3s' * (row.size - 1)}\n", *row)
-    end.join.chomp
+    end
+
+    lines[@today.month].sub!(/ #{@today.day} ?/, "[#{@today.day}]") if @today
+    lines.join.chomp
   end
 
   private
