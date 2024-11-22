@@ -33,7 +33,7 @@ class SgStrangeCalendar
     converter, row_format = CONVERTER_AND_ROW_FORMAT[direction]
     grid = @horizontal_grid.public_send(converter)
 
-    grid.map { |row| (row_format % row).rstrip }.join("\n").chomp
+    grid.map { |row| (row_format % row).rstrip }.join("\n")
       .sub(/-(\d+) ?/) { "[#{$1}]" }
   end
 
