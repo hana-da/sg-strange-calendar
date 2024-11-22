@@ -71,7 +71,7 @@ class SgStrangeCalendar
     c, y = year.divmod(100)
     r = -2 * c + c / 4
 
-    # 土曜日が0になるので、日曜日が0になるように補正   ________
+    # 土曜日が0になるので、日曜日が0になるように補正
     ((day + (26 * (month + 1)) / 10 + y + y / 4 + r) % 7 + 6) % 7
   end
 end
