@@ -43,8 +43,7 @@ class SgStrangeCalendar
 
   def fill_horizontal_grid_with_marked_days
     1.upto(12).each do |month|
-      # 月初のwdayが欲しいだけなので、本当はDate.newより計算した方が速いはず(が、何も見ずに書けない :<
-      start_index = Date.new(@year, month, 1).wday + 1
+      start_index = first_wday(month:) + 1
 
       @horizontal_grid[month][start_index..] = marked_days(month:)
       @horizontal_grid[month][DAY_CELLS] ||= nil # 要素数を揃える
@@ -64,5 +63,17 @@ class SgStrangeCalendar
     else
       DAYS_IN_MONTH[month]
     end
+  end
+
+  # https://ja.wikipedia.org/wiki/ツェラーの公式
+  def first_wday(month:)
+    year, day = @year, 1
+    (year -= 1; month += 12) if month < 3
+
+    c, y = year.divmod(100)
+    r = -2 * c + c / 4
+
+    # 土曜日が0になるので、日曜日が0になるように補正   ________
+    ((day + (26 * (month + 1)) / 10 + y + y / 4 + r) % 7 + 6) % 7
   end
 end
