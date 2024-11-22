@@ -42,7 +42,7 @@ class SgStrangeCalendar
   end
 
   def fill_horizontal_grid_with_marked_days
-    1.upto(12).each do |month|
+    1.upto(12) do |month|
       start_index = first_wday(month:) + 1
 
       @horizontal_grid[month][start_index..] = marked_days(month:)
