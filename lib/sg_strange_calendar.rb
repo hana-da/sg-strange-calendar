@@ -20,7 +20,9 @@ class SgStrangeCalendar
   def initialize(year, today = nil)
     @year = year
     @today = today
-    @horizontal_grid = horizontal_grid_only_header
+
+    @horizontal_grid = HEADER[:month].zip
+    @horizontal_grid[0] = [@year, *HEADER[:day]]
 
     fill_horizontal_grid_with_marked_days
   end
@@ -36,10 +38,6 @@ class SgStrangeCalendar
   end
 
   private
-
-  def horizontal_grid_only_header
-    HEADER[:month].zip.tap { |grid| grid[0] = [@year, *HEADER[:day]] }
-  end
 
   def fill_horizontal_grid_with_marked_days
     1.upto(12) do |month|
