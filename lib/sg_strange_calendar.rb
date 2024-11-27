@@ -49,7 +49,7 @@ class SgStrangeCalendar
   end
 
   def marked_days(month)
-    Array(1..end_of(month)).tap do |days|
+    Array(1.upto(end_of(month))).tap do |days|
       # @todayがある時は当該日を[]で囲む時のマーカーとして負数にしておく
       days[@today.day - 1] *= -1 if @today&.month == month
     end
