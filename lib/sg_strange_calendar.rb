@@ -41,21 +41,21 @@ class SgStrangeCalendar
 
   def fill_horizontal_grid_with_marked_days
     1.upto(12) do |month|
-      start_index = first_wday(month:) + 1
+      start_index = first_wday(month) + 1
 
-      @horizontal_grid[month][start_index..] = marked_days(month:)
+      @horizontal_grid[month][start_index..] = marked_days(month)
       @horizontal_grid[month][DAY_CELLS] ||= nil # 要素数を揃える
     end
   end
 
-  def marked_days(month:)
-    Array(1..end_of(month:)).tap do |days|
+  def marked_days(month)
+    Array(1..end_of(month)).tap do |days|
       # @todayがある時は当該日を[]で囲む時のマーカーとして負数にしておく
       days[@today.day - 1] *= -1 if @today&.month == month
     end
   end
 
-  def end_of(month:)
+  def end_of(month)
     if month == 2 && Date.gregorian_leap?(@year)
       29
     else
@@ -64,7 +64,7 @@ class SgStrangeCalendar
   end
 
   # https://ja.wikipedia.org/wiki/ツェラーの公式
-  def first_wday(month:)
+  def first_wday(month)
     year, day = @year, 1
     (year -= 1; month += 12) if month < 3
 
