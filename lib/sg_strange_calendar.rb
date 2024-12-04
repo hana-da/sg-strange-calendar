@@ -12,9 +12,9 @@ class SgStrangeCalendar
     day:   Date::DAYNAMES.map { _1[0, 2] }.cycle.first(DAY_CELLS)
   }.freeze
 
-  CONVERTER_AND_ROW_FORMAT = {
-    horizontal: [:itself,    "%-4s#{'%3s' * DAY_CELLS}"],
-    vertical:   [:transpose, "%-4s#{'%4s' * 12}"]
+  CONVERTER_AND_ROW_FORMATER = {
+    horizontal: [:itself,    ->(row) { ("%-4s#{'%3s' * DAY_CELLS}" % row).rstrip }],
+    vertical:   [:transpose, ->(row) { ("%-4s#{'%4s' * 12}" % row).rstrip }]
   }.freeze
 
   def initialize(year, today = nil)
@@ -29,11 +29,9 @@ class SgStrangeCalendar
 
   def generate(vertical: false)
     direction = vertical ? :vertical : :horizontal
+    converter, formatter = CONVERTER_AND_ROW_FORMATER[direction]
 
-    converter, row_format = CONVERTER_AND_ROW_FORMAT[direction]
-    grid = @horizontal_grid.public_send(converter)
-
-    grid.map { |row| (row_format % row).rstrip }.join("\n")
+    @horizontal_grid.public_send(converter).map(&formatter).join("\n")
       .sub(/-(\d+) ?/) { "[#{$1}]" }
   end
 
