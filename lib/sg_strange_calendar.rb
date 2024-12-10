@@ -24,11 +24,11 @@ class SgStrangeCalendar
 
   def generate(vertical: false)
     direction = vertical ? :vertical : :horizontal
-    converter, formatter = CONVERTER_AND_ROW_FORMATER[direction]
 
-    wrap_today_with_brackets(
-      horizontal_grid.public_send(converter).map(&formatter).join("\n")
-    )
+    converter, formatter = CONVERTER_AND_ROW_FORMATER[direction]
+    grid = horizontal_grid.public_send(converter)
+
+    wrap_today_with_brackets(grid.map(&formatter).join("\n"))
   end
 
   private
