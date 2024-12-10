@@ -20,29 +20,28 @@ class SgStrangeCalendar
   def initialize(year, today = nil)
     @year = year
     @today = today
-
-    @horizontal_grid = HEADER[:month].zip
-    @horizontal_grid[0] = [@year, *HEADER[:day]]
-
-    fill_horizontal_grid_with_marked_days
   end
 
   def generate(vertical: false)
     direction = vertical ? :vertical : :horizontal
     converter, formatter = CONVERTER_AND_ROW_FORMATER[direction]
 
-    @horizontal_grid.public_send(converter).map(&formatter).join("\n")
+    horizontal_grid.public_send(converter).map(&formatter).join("\n")
       .sub(/-(\d+) ?/) { "[#{$1}]" }
   end
 
   private
 
-  def fill_horizontal_grid_with_marked_days
-    1.upto(12) do |month|
-      start_index = first_wday(month) + 1
+  def horizontal_grid
+    @horizontal_grid ||= HEADER[:month].zip.tap do |grid|
+      grid[0] = [@year, *HEADER[:day]]
 
-      @horizontal_grid[month][start_index..] = marked_days(month)
-      @horizontal_grid[month][DAY_CELLS] ||= nil # 要素数を揃える
+      1.upto(12) do |month|
+        start_index = first_wday(month) + 1
+
+        grid[month][start_index..] = marked_days(month)
+        grid[month][DAY_CELLS] ||= nil # 要素数を揃える
+      end
     end
   end
 
