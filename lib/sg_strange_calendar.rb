@@ -46,11 +46,16 @@ class SgStrangeCalendar
     end
   end
 
+  # @todayがある時は当該日を [ ] で囲む時のマーカーとして負数にしておく
   def marked_days(month)
     Array(1.upto(end_of(month))).tap do |days|
-      # @todayがある時は当該日を[]で囲む時のマーカーとして負数にしておく
       days[@today.day - 1] *= -1 if @today&.month == month
     end
+  end
+
+  # marked_days で負数にした日付を [ ] で囲む
+  def wrap_today_with_brackets(marked_string)
+    marked_string.sub(/-(\d+) ?/, '[\1]')
   end
 
   def end_of(month)
@@ -59,11 +64,6 @@ class SgStrangeCalendar
     else
       DAYS_IN_MONTH[month]
     end
-  end
-
-  # marked_days で負数にした日付を [ ] で囲む
-  def wrap_today_with_brackets(marked_string)
-    marked_string.sub(/-(\d+) ?/, '[\1]')
   end
 
   # https://ja.wikipedia.org/wiki/ツェラーの公式
