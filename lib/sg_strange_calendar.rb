@@ -41,7 +41,7 @@ class SgStrangeCalendar
         start_index = first_wday(month) + 1
 
         grid[month][start_index..] = marked_days(month)
-        grid[month][DAY_CELLS] ||= nil # 要素数を揃える
+        grid[month][DAY_CELLS] ||= nil # transposeできるように要素数を揃える
       end
     end
   end
