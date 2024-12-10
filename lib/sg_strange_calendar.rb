@@ -62,14 +62,10 @@ class SgStrangeCalendar
   end
 
   # https://ja.wikipedia.org/wiki/ツェラーの公式
-  def first_wday(month)
-    year, day = @year, 1
-    (year -= 1; month += 12) if month < 3
+  def first_wday(m)
+    y, d = @year, 1
+    (y -= 1; m += 12) if m < 3
 
-    c, y = year.divmod(100)
-    r = -2 * c + c / 4
-
-    # 土曜日が0になるので、日曜日が0になるように補正
-    ((day + (26 * (month + 1)) / 10 + y + y / 4 + r) % 7 + 6) % 7
+    (y + y / 4 - y / 100 + y / 400 + (13 * m + 8) / 5 + d) % 7
   end
 end
