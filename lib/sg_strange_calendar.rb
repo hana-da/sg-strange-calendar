@@ -26,8 +26,9 @@ class SgStrangeCalendar
     direction = vertical ? :vertical : :horizontal
     converter, formatter = CONVERTER_AND_ROW_FORMATER[direction]
 
-    horizontal_grid.public_send(converter).map(&formatter).join("\n")
-      .sub(/-(\d+) ?/) { "[#{$1}]" }
+    wrap_today_with_brackets(
+      horizontal_grid.public_send(converter).map(&formatter).join("\n")
+    )
   end
 
   private
@@ -58,6 +59,11 @@ class SgStrangeCalendar
     else
       DAYS_IN_MONTH[month]
     end
+  end
+
+  # marked_days で負数にした日付を [ ] で囲む
+  def wrap_today_with_brackets(marked_string)
+    marked_string.sub(/-(\d+) ?/, '[\1]')
   end
 
   # https://ja.wikipedia.org/wiki/ツェラーの公式
